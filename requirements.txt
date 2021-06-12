@@ -1,0 +1,12 @@
+TgCrypto
+pyrogram
+pyromod
+cryptg
+GitPython
+heroku3
+asyncio
+aiohttp==3.6.2
+google_trans_new
+dnspython
+requests
+pillow
