@@ -1,6 +1,6 @@
 {
-  "name": "Developer Userbot",
-  "description": "Userbot for Developers",
+  "name": "PYROGOD",
+  "description": "Userbot for PERRY_XD",
   "keywords": [
     "telegram",
     "developer",
@@ -14,9 +14,9 @@
     "pyrogram",
     "telethon"
   ],
-  "repository": "https://github.com/TheCodents/DevloperUserbot",
-  "website": "jayantkageri.ml",
-  "success_url": "jayantkageri.ml",
+  "repository": "https://github.com/GODBOYX/PYROGOD",
+  "website": "#TODO",
+  "success_url": "#TODO",
   "stack": "heroku-20",
   "env": {
     "ENV": {
@@ -32,7 +32,7 @@
       "value": ""
     },
     "PYROGRAM_SESSION": {
-      "description": "Pyrogram String Session, Get it by Running python3 -m session",
+      "description": "Pyrogram String Session, Get it by going to @genStr_Bot",
       "value": "",
       "required": false
     },
