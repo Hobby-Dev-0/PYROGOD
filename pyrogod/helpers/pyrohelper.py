@@ -2,6 +2,9 @@
 # (C) 2021 Paramendra Singh
 from pyrogram.types import Message, User
 from pyrogram import Client
+from pyrogod.database.afkdb import get_afk_status
+from pyrogod.database.pmpermitdb import get_approved_users, pm_guard
+import pyrogod.database.welcomedb as pyrogoddb
 import shlex
 
 
@@ -30,3 +33,28 @@ def get_args(message):
     except ValueError:
         return message  # Cannot split, let's assume that it's just one long message
     return list(filter(lambda x: len(x) > 0, split))
+
+
+async def user_afk(filter, client: Client, message: Message):
+    check = await get_afk_status()
+    if check:
+        return True
+    else:
+        return False
+
+
+async def denied_users(filter, client: Client, message: Message):
+    if not await pm_guard():
+        return False
+    if message.chat.id in (await get_approved_users()):
+        return False
+    else:
+        return True
+
+
+async def welcome_chat(filter, client: Client, message: Message):
+    to_welcome = await pyrogoddb.get_welcome(str(message.chat.id))
+    if to_welcome:
+        return True
+    else:
+        return False
