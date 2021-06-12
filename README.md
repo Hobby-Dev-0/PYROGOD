@@ -22,13 +22,12 @@
 - `LOG_CHAT` - Create an Group and add [@GODEXPRO_BOT](https://telegram.me/GODEXPRO_BOT) and send `/id`
 - `PREFIX` - Custom Command Handler the default is "."
 ## Support Group
-- Facing Problems in this? No Problem, Visit us in [@Perry_XD](https://telegram.me/Perry_XD)
+- Facing Problems in this? No Problem, Msg me on [@Perry_XD](https://telegram.me/Perry_XD)
 
 # LEGAL
 ## Credits
 - Thanks to [Satwik](https://github.com/okay-retard) for his [Zect Userbot](https://github.com/okay-retard/ZectUserbot)
 - Thanks to [Dan Tès](https://github.com/delivrance) for his [Pyrogram](https://docs.pyrogram.org)
-- Thanks to [Lonami](https://github.com/lonami/) for his [Telethon](https://docs.telethon.dev)
 - Thanks to [Shrimadhv UK](https://github.com/SpEcHiDe)
 - Thanks to [Aditya S](https://github.com/xditya)
 - Thanks to [Swanit](https://github.com/swatv3nub)
