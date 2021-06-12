@@ -1,5 +1,5 @@
 <h1 align="center"><b>PyroGod Userbot</b></h1>
-<h4 align="center"><b>Mde with the help of Developer Userbot</b></h4>
+<h4 align="center"><b>Made with the help of Developer Userbot</b></h4>
 
 # HELP CENTER
 ## Deploy
