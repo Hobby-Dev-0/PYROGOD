@@ -3,6 +3,7 @@
 
 from enum import IntEnum, unique
 
+
 @unique
 class Types(IntEnum):
     TEXT = 1
@@ -56,6 +57,19 @@ def get_message_type(msg):
     elif msg.animation:
         content = msg.animation.file_id
         message_type = Types.ANIMATION
+
+    # TODO
+    # elif msg.contact:
+    # 	content = msg.contact.phone_number
+    # 	# text = None
+    # 	message_type = Types.CONTACT
+
+    # TODO
+    # elif msg.animated_sticker:
+    # 	content = msg.animation.file_id
+    # 	text = None
+    # 	message_type = Types.ANIMATED_STICKER
+
     else:
         return None, None
 
@@ -123,7 +137,18 @@ def get_note_type(msg):
             # text = None
             data_type = Types.ANIMATION
 
-    
+    # TODO
+    # elif reply.contact:
+    # 	content = reply.contact.phone_number
+    # 	# text = None
+    # 	data_type = Types.CONTACT
+
+    # TODO
+    # elif reply.animated_sticker:
+    # 	content = reply.animation.file_id
+    # 	text = None
+    # 	data_type = Types.ANIMATED_STICKER
+
     else:
         return None, None, None, None
 
@@ -195,7 +220,12 @@ def get_welcome_type(msg):
             # text = None
             data_type = Types.ANIMATION
 
-    
+    # TODO
+    # elif reply.animated_sticker:
+    # 	content = reply.animation.file_id
+    # 	text = None
+    # 	data_type = Types.ANIMATED_STICKER
+
     else:
         if msg.caption:
             text = msg.caption.split(None, 1)
