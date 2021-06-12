@@ -5,7 +5,7 @@ import asyncio
 import time
 from datetime import datetime
 from pyrogram import filters
-from _pyrogram import app, StartTime, CMD_HELP
+from pyrogod import app, StartTime, CMD_HELP
 from sys import version_info
 
 from pyrogram import __version__ as __pyro_version__
