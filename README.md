@@ -16,7 +16,7 @@
 
 ## Configuration
 - `API_ID` and `API_HASH` - Get API_ID and API_HASH from https://my.telegram.org
-- `TELETHON_SESSION` and `PYROGRAM_SESSION` - Get this by going to [PYROGRAM STRING SESSION BOT](https://telegram.me/StringSessionGen_Bot)
+- `PYROGRAM_SESSION` - Get this by going to [PYROGRAM STRING SESSION BOT](https://telegram.me/genStr_Bot)
 - `HEROKU_APP_NAME` [For Heroku Only] - The App Name that you putted in first in Heroku
 - `HEROKU_API` [For Heroku Only] - Get this from [here](https://dashboard.heroku.com/account)
 - `LOG_CHAT` - Create an Group and add [@GODEXPRO_BOT](https://telegram.me/GODEXPRO_BOT) and send `/id`
