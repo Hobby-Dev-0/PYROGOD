@@ -31,6 +31,10 @@
       "description": "Get this value from my.telegram.org! Please do not steal",
       "value": ""
     },
+    "MONGO_URI": {
+      "description": "MONGO DB URL PASTE THAT HERE",
+      "value": "",
+    },
     "PYROGRAM_SESSION": {
       "description": "Pyrogram String Session, Get it by going to @genStr_Bot",
       "value": "",
