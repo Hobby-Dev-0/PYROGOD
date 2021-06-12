@@ -57,7 +57,7 @@ async def afk_mentioned(_, message):
             f"**I'm AFK right now (since {afk_since})\nReason:** __{reason}__"
         )
     else:
-        await message.reply(f"**I'm AFK right now (since {afk_since})**")
+        await message.edit(f"**I'm AFK right now (since {afk_since})**")
 
         _, message_type = get_message_type(message)
         if message_type == Types.TEXT:
