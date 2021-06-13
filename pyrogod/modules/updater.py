@@ -1,14 +1,17 @@
+# MADE BY PERRY_XD
+# PORTED FROM FRIDAY USERBOT
+# KANG WITH CREDITS ELSE GAY
 import asyncio
-import sys
-from os import environ, execle, path, remove
-from config import HEROKU_API, HEROKU_APP_NAME, PREFIX
+import os
+import git
+from pyrogram import Client, filters
+from config import (
+    PREFIX,
+    HEROKU_API,
+)
+from pyrogod import app, LOGGER, CMD_HELP
 
-from git import Repo
-from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
-from pyrogram import filters
-from pyrogod import app, CMD_HELP
-from pyrogod.helpers.pyrohelper import get_arg
 
 CMD_HELP.update(
     {
@@ -18,152 +21,142 @@ CMD_HELP.update(
     }
 )
 
-UPSTREAM_REPO_URL = "https://github.com/GODBOYX/PYROGOD"
-requirements_path = path.join(
-    path.dirname(path.dirname(path.dirname(__file__))), "requirements.txt"
+
+UPSTREAM_REPO_URL ="https://github.com/GODBOYX/PYROGOD"
+
+# -- Constants -- #
+IS_SELECTED_DIFFERENT_BRANCH = (
+    "looks like a custom branch {branch_name} "
+    "is being used \n"
+    "in this case, Updater is unable to identify the branch to be updated."
+    "please check out to an official branch, and re-start the updater."
 )
-
-
-async def gen_chlog(repo, diff):
-    ch_log = ""
-    d_form = "On %d/%m/%y at %H:%M:%S"
-    for c in repo.iter_commits(diff):
-        ch_log += f"**#{c.count()}** : {c.committed_datetime.strftime(d_form)} : [{c.summary}]({UPSTREAM_REPO_URL.rstrip('/')}/commit/{c}) by `{c.author}`\n"
-    return ch_log
-
-
-async def updateme_requirements():
-    reqs = str(requirements_path)
-    try:
-        process = await asyncio.create_subprocess_shell(
-            " ".join([sys.executable, "-m", "pip", "install", "-r", reqs]),
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-        )
-        await process.communicate()
-        return process.returncode
-    except Exception as e:
-        return repr(e)
+BOT_IS_UP_TO_DATE = "the userbot is up-to-date."
+NEW_BOT_UP_DATE_FOUND = (
+    "new update found for {branch_name}\n"
+    "chagelog: \n\n{changelog}\n"
+    "updating ..."
+)
+NEW_UP_DATE_FOUND = (
+    "new update found for {branch_name}\n"
+    "updating ..."
+)
+REPO_REMOTE_NAME = "tmp_upstream_remote"
+IFFUCI_ACTIVE_BRANCH_NAME = "main"
+DIFF_MARKER = "HEAD..{remote_name}/{branch_name}"
+NO_HEROKU_APP_CFGD = "no heroku application found, but a key given? 😅😅 "
+HEROKU_GIT_REF_SPEC = "HEAD:refs/heads/main"
+RESTARTING_APP = "re-starting heroku application"
+# -- Constants End -- #
 
 
 @app.on_message(filters.command("update", PREFIX) & filters.me)
-async def upstream(client, message):
-    status = await message.edit("`Checking for updates, please wait....`")
-    conf = get_arg(message)
-    off_repo = UPSTREAM_REPO_URL
+async def updater(client, message):
+    status_message = await message.reply_text("Checking for updates. Plz wait...")
     try:
-        txt = "`Oops.. Updater cannot continue due to "
-        txt += "some problems occured`\n\n**LOGTRACE:**\n"
-        repo = Repo()
-    except NoSuchPathError as error:
-        await status.edit(f"{txt}\n`directory {error} is not found`")
-        repo.__del__()
-        return
-    except GitCommandError as error:
-        await status.edit(f"{txt}\n`Early failure! {error}`")
-        repo.__del__()
-        return
-    except InvalidGitRepositoryError as error:
-        if conf != "now":
-            pass
-        repo = Repo.init()
-        origin = repo.create_remote("upstream", off_repo)
+        repo = git.Repo()
+    except git.exc.InvalidGitRepositoryError as error_one:
+        LOGGER.info(str(error_one))
+        repo = git.Repo.init()
+        origin = repo.create_remote(REPO_REMOTE_NAME, UPSTREAM_REPO_URL)
         origin.fetch()
-        repo.create_head("main", origin.refs.main)
-        repo.heads.main.set_tracking_branch(origin.refs.main)
-        repo.heads.main.checkout(True)
-    ac_br = repo.active_branch.name
-    if ac_br != "main":
-        await status.edit(
-            f"**[UPDATER]:**` You are on ({ac_br})\n Please change to main branch.`"
-        )
-        repo.__del__()
-        return
+        repo.create_head(IFFUCI_ACTIVE_BRANCH_NAME, origin.refs.master)
+        repo.heads.master.checkout(True)
+
+    active_branch_name = repo.active_branch.name
+    LOGGER.info(active_branch_name)
+    if active_branch_name != IFFUCI_ACTIVE_BRANCH_NAME:
+        await status_message.edit(IS_SELECTED_DIFFERENT_BRANCH.format(
+            branch_name=active_branch_name
+        ))
+        return False
+
     try:
-        repo.create_remote("upstream", off_repo)
-    except BaseException:
-        pass
-    ups_rem = repo.remote("upstream")
-    ups_rem.fetch(ac_br)
-    changelog = await gen_chlog(repo, f"HEAD..upstream/{ac_br}")
-    if "now" not in conf:
-        if changelog:
-            changelog_str = f"**New UPDATE available for [[{ac_br}]]({UPSTREAM_REPO_URL}/tree/{ac_br}):\n\nCHANGELOG**\n\n{changelog}"
-            if len(changelog_str) > 4096:
-                await status.edit("`Changelog is too big, view the file to see it.`")
-                file = open("output.txt", "w+")
-                file.write(changelog_str)
-                file.close()
-                await app.send_document(
-                    message.chat.id,
-                    "output.txt",
-                    caption="Do `.update now` to update.",
-                    reply_to_message_id=status.message_id,
-                )
-                remove("output.txt")
-            else:
-                return await status.edit(
-                    f"{changelog_str}\n\nDo `.update now` to update.",
-                    disable_web_page_preview=True,
-                )
-        else:
-            await status.edit(
-                f"\n`Your BOT is`  **up-to-date**  `with`  **[[{ac_br}]]({UPSTREAM_REPO_URL}/tree/{ac_br})**\n",
-                disable_web_page_preview=True,
-            )
-            repo.__del__()
-            return
+        repo.create_remote(REPO_REMOTE_NAME, UPSTREAM_REPO_URL)
+    except Exception as error_two:
+        LOGGER.info(str(error_two))
+
+    tmp_upstream_remote = repo.remote(REPO_REMOTE_NAME)
+    tmp_upstream_remote.fetch(active_branch_name)
+
+    changelog = generate_change_log(
+        repo,
+        DIFF_MARKER.format(
+            remote_name=REPO_REMOTE_NAME,
+            branch_name=active_branch_name
+        )
+    )
+    LOGGER.info(changelog)
+
+    if not changelog:
+        await status_message.edit(BOT_IS_UP_TO_DATE)
+        return False
+
+    message_one = NEW_BOT_UP_DATE_FOUND.format(
+        branch_name=active_branch_name,
+        changelog=changelog
+    )
+    message_two = NEW_UP_DATE_FOUND.format(
+        branch_name=active_branch_name
+    )
+
+    if len(message_one) > 4096:
+        with open("change.log", "w+", encoding="utf8") as out_file:
+            out_file.write(str(message_one))
+        await message.reply_document(
+            document="change.log",
+            caption=message_two,
+            disable_notification=True,
+            reply_to_message_id=message.message_id
+        )
+        os.remove("change.log")
+    else:
+        await message.reply(message_one)
+
+    tmp_upstream_remote.fetch(active_branch_name)
+    repo.git.reset("--hard", "FETCH_HEAD")
+
     if HEROKU_API is not None:
         import heroku3
-
         heroku = heroku3.from_key(HEROKU_API)
-        heroku_app = None
         heroku_applications = heroku.apps()
-        if not HEROKU_APP_NAME:
-            await status.edit(
-                "`Please set up the HEROKU_APP_NAME variable to be able to update userbot.`"
+        if len(heroku_applications) >= 1:
+            # assuming there will be only one heroku application
+            # created per account 馃檭
+            # possibly, ignore premium Heroku users
+            heroku_app = heroku_applications[0]
+            heroku_git_url = heroku_app.git_url.replace(
+                "https://",
+                "https://api:" + HEROKU_API + "@"
             )
-            repo.__del__()
-            return
-        for app in heroku_applications:
-            if app.name == HEROKU_APP_NAME:
-                heroku_app = app
-                break
-        if heroku_app is None:
-            await status.edit(
-                f"{txt}\n`Invalid Heroku credentials for updating userbot dyno.`"
-            )
-            repo.__del__()
-            return
-        await status.edit(
-            "`Userbot dyno build in progress, please wait for it to complete.`"
-        )
-        ups_rem.fetch(ac_br)
-        repo.git.reset("--hard", "FETCH_HEAD")
-        heroku_git_url = heroku_app.git_url.replace(
-            "https://", "https://api:" + HEROKU_API + "@"
-        )
-        if "heroku" in repo.remotes:
-            remote = repo.remote("heroku")
-            remote.set_url(heroku_git_url)
+            if "heroku" in repo.remotes:
+                remote = repo.remote("heroku")
+                remote.set_url(heroku_git_url)
+            else:
+                remote = repo.create_remote("heroku", heroku_git_url)
+            remote.push(refspec=HEROKU_GIT_REF_SPEC, force=True)
         else:
-            remote = repo.create_remote("heroku", heroku_git_url)
-        try:
-            remote.push(refspec=f"HEAD:refs/heads/{ac_br}", force=True)
-        except GitCommandError as error:
-            pass
-        await status.edit("`Successfully Updated!\nRestarting, please wait...`")
-    else:
-        # Classic Updater, pretty straightforward.
-        try:
-            ups_rem.pull(ac_br)
-        except GitCommandError:
-            repo.git.reset("--hard", "FETCH_HEAD")
-        await updateme_requirements()
-        await status.edit(
-            "`Successfully Updated!\nBot is restarting... Wait for a second!`",
-        )
-        # Spin a new instance of bot
-        args = [sys.executable, "./resources/startup/deploy.sh"]
-        execle(sys.executable, *args, environ)
-        return
+            await message.reply(NO_HEROKU_APP_CFGD)
+
+    await status_message.edit(RESTARTING_APP)
+    # https://t.me/c/1387666944/94908
+    asyncio.get_event_loop().create_task(restart(client, status_message))
+
+
+def generate_change_log(git_repo, diff_marker):
+    out_put_str = ""
+    d_form = "%d/%m/%y"
+    for repo_change in git_repo.iter_commits(diff_marker):
+        out_put_str += "鈥"
+        out_put_str += repo_change.committed_datetime.strftime(d_form)
+        out_put_str += "]: "
+        out_put_str += f"{repo_change.summary} <{repo_change.author}>\n"
+    return out_put_str
+
+
+async def restart(client, message):
+    await client.restart()
+    await message.edit(
+        "restarted! "
+        f"do `{PREFIX}alive or {PREFIX}ping` to check if I am online?"
+    )
