@@ -61,7 +61,7 @@ async def updater(client, message):
         origin = repo.create_remote(REPO_REMOTE_NAME, UPSTREAM_REPO_URL)
         origin.fetch()
         repo.create_head(IFFUCI_ACTIVE_BRANCH_NAME, origin.refs.main)
-        repo.heads.master.checkout(True)
+        repo.heads.main.checkout(True)
 
     active_branch_name = repo.active_branch.name
     LOGGER.info(active_branch_name)
