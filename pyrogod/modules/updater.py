@@ -7,7 +7,7 @@ import git
 from pyrogram import Client, filters
 from config import (
     PREFIX,
-    HEROKU_API,
+    HEROKU_API
 )
 from pyrogod import app, LOGGER, CMD_HELP
 
@@ -60,7 +60,7 @@ async def updater(client, message):
         repo = git.Repo.init()
         origin = repo.create_remote(REPO_REMOTE_NAME, UPSTREAM_REPO_URL)
         origin.fetch()
-        repo.create_head(IFFUCI_ACTIVE_BRANCH_NAME, origin.refs.master)
+        repo.create_head(IFFUCI_ACTIVE_BRANCH_NAME, origin.refs.main)
         repo.heads.master.checkout(True)
 
     active_branch_name = repo.active_branch.name
